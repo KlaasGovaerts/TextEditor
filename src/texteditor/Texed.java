@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.JLabel;
 
 /**
  * @author P. Cordemans
@@ -21,6 +22,7 @@ import java.awt.event.*;
 public class Texed extends JFrame implements DocumentListener {
 	private JTextArea textArea;
 	private StackLL<String> undoStack;
+	private JLabel info;
 
 	private static final long serialVersionUID = 5514566716849599754L;
 	/**
@@ -48,6 +50,7 @@ public class Texed extends JFrame implements DocumentListener {
 		improvedButton redoButton=new improvedButton("redo",textArea);
 		improvedButton closeButton=new improvedButton("close tag",textArea);
 		improvedButton checkButton=new improvedButton("check tags",textArea);
+		info=new JLabel();
 		/*JButton undoButton=new JButton("undo");
 		JButton redoButton=new JButton("redo");
 		JButton closeButton=new JButton("close tag");*/
@@ -56,8 +59,16 @@ public class Texed extends JFrame implements DocumentListener {
 		menu.add(redoButton);
 		menu.add(closeButton);
 		menu.add(checkButton);
+		menu.add(info);
 		add(menu,BorderLayout.PAGE_START);
-		closeButton.addActionListener(new closeButtonHandler());
+		undoButton.addActionListener(new ButtonHandler());
+		redoButton.addActionListener(new ButtonHandler());
+		closeButton.addActionListener(new ButtonHandler());
+		checkButton.addActionListener(new ButtonHandler());
+		showUnclosedTags();
+		repaint();
+		revalidate();
+		doLayout();
 		
 		undoStack=new StackLL<String>();
 	}
@@ -66,12 +77,14 @@ public class Texed extends JFrame implements DocumentListener {
 	 * Callback when changing an element
 	 */
 	public void changedUpdate(DocumentEvent ev) {
+		showUnclosedTags();
 	}
 	
 	/**
 	 * Seaches the text for tags.
 	 */
-	public static String closeTag(String str){
+
+	public static StackLL<String> generateStack(String str){
 		StackLL<String> tagStack=new StackLL<String>();
 		char[] charArray = str.toCharArray();
 		boolean inTag=false;//set to true if a '<' is found.
@@ -106,13 +119,29 @@ public class Texed extends JFrame implements DocumentListener {
 				inTag=true;
 			}
 		}
+		return tagStack;
+	}
+	
+	public static String closeTag(String str){
+		StackLL<String> tagStack=Texed.generateStack(str);
 		return "</"+tagStack.top()+">";
+	}
+	
+	public void showUnclosedTags(){
+		StackLL<String> tagStack=Texed.generateStack(textArea.getText());
+		int size=tagStack.size();
+		if(size==1){
+			info.setText(size+" Unclosed tag");
+		}else{
+			info.setText(size+" Unclosed tags");
+		}
 	}
 
 	/**
 	 * Callback when deleting an element
 	 */
 	public void removeUpdate(DocumentEvent ev) {
+		showUnclosedTags();
 	}
 
 	/**
@@ -124,6 +153,7 @@ public class Texed extends JFrame implements DocumentListener {
 		
 		// In the callback you cannot change UI elements, you need to start a new Runnable
 		//SwingUtilities.invokeLater(new Task("foo"));
+		showUnclosedTags();
 	}
 
 	/**
@@ -157,13 +187,19 @@ public class Texed extends JFrame implements DocumentListener {
 
 	}
 	
-	private class closeButtonHandler implements ActionListener{
+	private class ButtonHandler implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			/*SwingUtilities.invokeLater(new Task("foo"));*/
 			improvedButton source=(improvedButton) e.getSource();
 			textArea=source.getTextArea();
 			String text=textArea.getText();
-			textArea.append(Texed.closeTag(text));
+			String buttonText=source.getText();
+			switch(buttonText){
+				case "close tag":
+				textArea.append(Texed.closeTag(text));
+				break;
+			}
+			showUnclosedTags();
 			//TODO actual insert, not at end of document
 	    }
 	}
