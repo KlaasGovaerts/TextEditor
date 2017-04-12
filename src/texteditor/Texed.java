@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.JLabel;
+import javax.swing.event.DocumentEvent.EventType;
 
 /**
  * @author P. Cordemans
@@ -21,8 +22,10 @@ import javax.swing.JLabel;
  */
 public class Texed extends JFrame implements DocumentListener {
 	private JTextArea textArea;
-	private StackLL<String> undoStack;
 	private JLabel info;
+	private DoublyLinkedList<DocumentEdit> editList=new DoublyLinkedList<DocumentEdit>(50);
+	private String previousText="";
+	private boolean automaticEdit=false;
 
 	private static final long serialVersionUID = 5514566716849599754L;
 	/**
@@ -46,10 +49,10 @@ public class Texed extends JFrame implements DocumentListener {
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
-		improvedButton undoButton=new improvedButton("undo",textArea);
-		improvedButton redoButton=new improvedButton("redo",textArea);
-		improvedButton closeButton=new improvedButton("close tag",textArea);
-		improvedButton checkButton=new improvedButton("check tags",textArea);
+		improvedButton undoButton=new improvedButton("undo",textArea,this);
+		improvedButton redoButton=new improvedButton("redo",textArea,this);
+		improvedButton closeButton=new improvedButton("close tag",textArea,this);
+		improvedButton checkButton=new improvedButton("check tags",textArea,this);
 		info=new JLabel();
 		/*JButton undoButton=new JButton("undo");
 		JButton redoButton=new JButton("redo");
@@ -69,8 +72,6 @@ public class Texed extends JFrame implements DocumentListener {
 		repaint();
 		revalidate();
 		doLayout();
-		
-		undoStack=new StackLL<String>();
 	}
 
 	/**
@@ -142,6 +143,7 @@ public class Texed extends JFrame implements DocumentListener {
 	 */
 	public void removeUpdate(DocumentEvent ev) {
 		showUnclosedTags();
+		saveDocumentEdit(ev);
 	}
 
 	/**
@@ -154,7 +156,59 @@ public class Texed extends JFrame implements DocumentListener {
 		// In the callback you cannot change UI elements, you need to start a new Runnable
 		//SwingUtilities.invokeLater(new Task("foo"));
 		showUnclosedTags();
+		saveDocumentEdit(ev);
 	}
+	
+	public void undo(){
+		if(editList.getCurrent()!=null){
+		automaticEdit=true;
+		DocumentEdit documentedit=editList.getCurrent();
+		int location=documentedit.getLocation();
+		String edit=documentedit.getEdit();
+		boolean insert=documentedit.isInsert();
+		
+		if(insert){
+			textArea.replaceRange("",location,location+edit.length());
+		} else {
+			textArea.insert(edit,location);
+		}
+		editList.next();
+		automaticEdit=false;
+		}
+	}
+	
+	public void redo(){
+		automaticEdit=true;
+		
+		automaticEdit=false;
+	}
+	
+	public void saveDocumentEdit(DocumentEvent ev){
+		if(!automaticEdit){
+		String text=textArea.getText();
+		EventType event=ev.getType();
+		int location=ev.getOffset();
+		int length=ev.getLength();
+		String edit="";
+		boolean insert;
+		
+		if(event==EventType.INSERT){
+			insert=true;
+			for(int i=0;i<length;i++){
+				edit+=text.charAt(location+i);
+			}
+		} else {
+			insert=false;
+			for(int i=0;i<length;i++){
+				edit+=previousText.charAt(location+i);
+			}
+		}
+		DocumentEdit documentedit=new DocumentEdit(location,edit,insert);
+		editList.addBeforeCurrent(documentedit);
+		previousText=textArea.getText();
+		}
+	}
+	
 
 	/**
 	 * Runnable: change UI elements as a result of a callback
@@ -187,21 +241,41 @@ public class Texed extends JFrame implements DocumentListener {
 
 	}
 	
+	//TODO replace code only used for close tags
 	private class ButtonHandler implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			/*SwingUtilities.invokeLater(new Task("foo"));*/
 			improvedButton source=(improvedButton) e.getSource();
 			textArea=source.getTextArea();
+			Texed texed=source.getTexed();
 			String text=textArea.getText();
 			String buttonText=source.getText();
 			switch(buttonText){
 				case "close tag":
-				textArea.append(Texed.closeTag(text));
+					if(!closeTag(text).equals("</null>")){
+						int position=textArea.getText().length();
+						String closeTag=Texed.closeTag(text);
+						textArea.append(closeTag);
+						DocumentEdit documentedit=new DocumentEdit(position,closeTag,true);
+						editList.addBeforeCurrent(documentedit);
+					}
+				break;
+				case "undo":
+					texed.undo();
+				break;
+				case "redo":
+					texed.redo();
 				break;
 			}
 			showUnclosedTags();
 			//TODO actual insert, not at end of document
 	    }
+	}
+	
+	private class textFieldHandler implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			
+		}
 	}
 
 }

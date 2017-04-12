@@ -8,7 +8,7 @@ package texteditor;
  * @param <T> type of the elements on the stack
  */
 public class StackLL<T> implements Stack<T> {
-	private LinkedList<T> ll;
+	protected LinkedList<T> ll;
 	
 	/**
 	 * Creates an empty stack

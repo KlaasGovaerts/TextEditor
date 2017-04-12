@@ -6,12 +6,16 @@ import javax.swing.JTextArea;
 
 public class improvedButton extends JButton {
 	protected JTextArea textArea;
-	public improvedButton(String text,JTextArea textArea){
+	protected Texed texed;
+	public improvedButton(String text,JTextArea textArea,Texed texed){
 		super(text);
 		this.textArea=textArea;
+		this.texed=texed;
 	}
 	
 	public JTextArea getTextArea(){
 		return textArea;
 	}
+	
+	public Texed getTexed(){return texed;}
 }
