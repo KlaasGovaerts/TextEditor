@@ -28,6 +28,7 @@ public class Texed extends JFrame implements DocumentListener {
 	private boolean automaticEdit=false;
 	private improvedButton undoButton;
 	private improvedButton redoButton;
+	private improvedButton closeButton;
 
 	private static final long serialVersionUID = 5514566716849599754L;
 	/**
@@ -53,8 +54,8 @@ public class Texed extends JFrame implements DocumentListener {
 		
 		undoButton=new improvedButton("undo",textArea,this);
 		redoButton=new improvedButton("redo",textArea,this);
-		improvedButton closeButton=new improvedButton("close tag",textArea,this);
-		improvedButton checkButton=new improvedButton("check tags",textArea,this);
+		closeButton=new improvedButton("close tag",textArea,this);
+		//improvedButton checkButton=new improvedButton("check tags",textArea,this);
 		info=new JLabel();
 		/*JButton undoButton=new JButton("undo");
 		JButton redoButton=new JButton("redo");
@@ -63,20 +64,26 @@ public class Texed extends JFrame implements DocumentListener {
 		menu.add(undoButton);
 		menu.add(redoButton);
 		menu.add(closeButton);
-		menu.add(checkButton);
+		//menu.add(checkButton);
 		menu.add(info);
 		add(menu,BorderLayout.PAGE_START);
 		undoButton.addActionListener(new ButtonHandler());
 		undoButton.setEnabled(false);
 		redoButton.addActionListener(new ButtonHandler());
+		redoButton.setEnabled(false);
 		closeButton.addActionListener(new ButtonHandler());
-		checkButton.addActionListener(new ButtonHandler());
+		closeButton.setEnabled(false);
+		//checkButton.addActionListener(new ButtonHandler());
 		showUnclosedTags();
 		repaint();
 		revalidate();
 		doLayout();
 	}
 
+	public String getText(){
+		return textArea.getText();
+	}
+	
 	/**
 	 * Callback when changing an element
 	 */
@@ -88,9 +95,9 @@ public class Texed extends JFrame implements DocumentListener {
 	 * Seaches the text for tags.
 	 */
 
-	public static StackLL<String> generateStack(String str){
+	public StackLL<String> generateStack(){
 		StackLL<String> tagStack=new StackLL<String>();
-		char[] charArray = str.toCharArray();
+		char[] charArray = textArea.getText().toCharArray();
 		boolean inTag=false;//set to true if a '<' is found.
 		boolean closingTag=false;
 		String currentTag="";
@@ -126,19 +133,28 @@ public class Texed extends JFrame implements DocumentListener {
 		return tagStack;
 	}
 	
-	public static String closeTag(String str){
-		StackLL<String> tagStack=Texed.generateStack(str);
-		return "</"+tagStack.top()+">";
+	public void closeTag(){
+		StackLL<String> tagStack=generateStack();
+		if(!tagStack.isEmpty()){
+			int position=textArea.getText().length();
+			String closeTag="</"+tagStack.top()+">";
+			textArea.append(closeTag);
+			DocumentEdit documentedit=new DocumentEdit(position,closeTag,true);
+			editList.addBeforeCurrent(documentedit);
+			previousText=textArea.getText();
+			redoButton.setEnabled(false);
+		}
 	}
 	
 	public void showUnclosedTags(){
-		StackLL<String> tagStack=Texed.generateStack(textArea.getText());
+		StackLL<String> tagStack=generateStack();
 		int size=tagStack.size();
 		if(size==1){
 			info.setText(size+" Unclosed tag");
 		}else{
 			info.setText(size+" Unclosed tags");
 		}
+		closeButton.setEnabled(size!=0);
 	}
 
 	/**
@@ -181,11 +197,12 @@ public class Texed extends JFrame implements DocumentListener {
 			undoButton.setEnabled(false);
 		}
 		}
+		redoButton.setEnabled(true);
 	}
 	//TODO 50 not 49
 	
 	public void redo(){
-		if(editList.getFirst()!=null&&editList.getPrevious()!=null){
+		if(!editList.isEmpty()&&!editList.cursorAtFirst()){
 		editList.previous();
 		DocumentEdit documentedit=editList.getCurrent();
 		automaticEdit=true;
@@ -198,7 +215,11 @@ public class Texed extends JFrame implements DocumentListener {
 			textArea.replaceRange("",location,location+edit.length());
 		}
 		automaticEdit=false;
+		if(editList.cursorAtFirst()){
+			redoButton.setEnabled(false);
 		}
+		}
+		undoButton.setEnabled(true);
 		/*
 		if(editList.getCurrent()==null){
 			undoButton.setEnabled(false);
@@ -240,6 +261,7 @@ public class Texed extends JFrame implements DocumentListener {
 		editList.addBeforeCurrent(documentedit);
 		previousText=textArea.getText();
 		undoButton.setEnabled(true);
+		redoButton.setEnabled(false);
 		}
 	}
 	
@@ -286,13 +308,7 @@ public class Texed extends JFrame implements DocumentListener {
 			String buttonText=source.getText();
 			switch(buttonText){
 				case "close tag":
-					if(!closeTag(text).equals("</null>")){
-						int position=textArea.getText().length();
-						String closeTag=Texed.closeTag(text);
-						textArea.append(closeTag);
-						DocumentEdit documentedit=new DocumentEdit(position,closeTag,true);
-						editList.addBeforeCurrent(documentedit);
-					}
+					texed.closeTag();
 				break;
 				case "undo":
 					texed.undo();

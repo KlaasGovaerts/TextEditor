@@ -17,6 +17,9 @@ public class DoublyLinkedList<T> {
 		initialise(element);
 	}
 	
+	public boolean isEmpty(){
+		return empty;
+	}
 	public void initialise(T element){
 		current=new Node(element);
 		first=current;
@@ -46,7 +49,11 @@ public class DoublyLinkedList<T> {
 	}
 	
 	public void previous(){
-		current=current.getPrevious();
+		if(current==null){
+			current=last;
+		} else {
+			current=current.getPrevious();
+		}
 		/*if(!empty){
 			if(current!=null){
 				if(current.getPrevious()!=null){
@@ -105,12 +112,27 @@ public class DoublyLinkedList<T> {
 		last=last.getPrevious();
 	}
 	
+	public boolean cursorAtFirst(){
+		if(current!=null){
+			return current.getPrevious()==null;
+		} else {
+			return false;
+		}
+	}
+	
 	public T getPrevious(){
+		if(current==null){
+			return last.getElement();
+		} else {
+			return current.getPrevious().getElement();
+		}		
+		/*
 		if(current!=null&&current.getPrevious()!=null){
 			return current.getPrevious().getElement();
 		} else {
 			return null;
 		}
+		*/
 	}
 	
 	public T getFirst(){
