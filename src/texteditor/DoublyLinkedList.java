@@ -6,6 +6,7 @@ public class DoublyLinkedList<T> {
 	private Node first;
 	private Node last;
 	private boolean isFirst;
+	private boolean empty=true;
 	
 	public DoublyLinkedList(int maxSize){
 		this.maxSize=maxSize;
@@ -19,7 +20,8 @@ public class DoublyLinkedList<T> {
 	public void initialise(T element){
 		current=new Node(element);
 		first=current;
-		last=current;		
+		last=current;
+		empty=false;
 	}
 	
 	public void addBeforeCurrent(T element){
@@ -44,11 +46,17 @@ public class DoublyLinkedList<T> {
 	}
 	
 	public void previous(){
-		if(current!=null){
-			if(current.getPrevious()!=null){
-				current=current.getPrevious();
-			}
-		}
+		current=current.getPrevious();
+		/*if(!empty){
+			if(current!=null){
+				if(current.getPrevious()!=null){
+					
+				}
+			}else{
+				current=last;
+			}*/
+		
+		//}
 		/*
 		if(current!=null){
 		current=current.getPrevious();
@@ -95,6 +103,22 @@ public class DoublyLinkedList<T> {
 	public void removeLast(){
 		last.getPrevious().setNext(null);
 		last=last.getPrevious();
+	}
+	
+	public T getPrevious(){
+		if(current!=null&&current.getPrevious()!=null){
+			return current.getPrevious().getElement();
+		} else {
+			return null;
+		}
+	}
+	
+	public T getFirst(){
+		if(current!=null){
+			return first.getElement();
+		} else {
+			return null;
+		}
 	}
 	
 	//TODO check if all methods use T element

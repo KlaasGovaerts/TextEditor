@@ -26,6 +26,8 @@ public class Texed extends JFrame implements DocumentListener {
 	private DoublyLinkedList<DocumentEdit> editList=new DoublyLinkedList<DocumentEdit>(50);
 	private String previousText="";
 	private boolean automaticEdit=false;
+	private improvedButton undoButton;
+	private improvedButton redoButton;
 
 	private static final long serialVersionUID = 5514566716849599754L;
 	/**
@@ -49,8 +51,8 @@ public class Texed extends JFrame implements DocumentListener {
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
-		improvedButton undoButton=new improvedButton("undo",textArea,this);
-		improvedButton redoButton=new improvedButton("redo",textArea,this);
+		undoButton=new improvedButton("undo",textArea,this);
+		redoButton=new improvedButton("redo",textArea,this);
 		improvedButton closeButton=new improvedButton("close tag",textArea,this);
 		improvedButton checkButton=new improvedButton("check tags",textArea,this);
 		info=new JLabel();
@@ -65,6 +67,7 @@ public class Texed extends JFrame implements DocumentListener {
 		menu.add(info);
 		add(menu,BorderLayout.PAGE_START);
 		undoButton.addActionListener(new ButtonHandler());
+		undoButton.setEnabled(false);
 		redoButton.addActionListener(new ButtonHandler());
 		closeButton.addActionListener(new ButtonHandler());
 		checkButton.addActionListener(new ButtonHandler());
@@ -174,13 +177,43 @@ public class Texed extends JFrame implements DocumentListener {
 		}
 		editList.next();
 		automaticEdit=false;
+		if(editList.getCurrent()==null){
+			undoButton.setEnabled(false);
+		}
 		}
 	}
+	//TODO 50 not 49
 	
 	public void redo(){
+		if(editList.getFirst()!=null&&editList.getPrevious()!=null){
+		editList.previous();
+		DocumentEdit documentedit=editList.getCurrent();
 		automaticEdit=true;
-		
+		int location=documentedit.getLocation();
+		String edit=documentedit.getEdit();
+		boolean insert=documentedit.isInsert();
+		if(insert){
+			textArea.insert(edit,location);
+		} else {
+			textArea.replaceRange("",location,location+edit.length());
+		}
 		automaticEdit=false;
+		}
+		/*
+		if(editList.getCurrent()==null){
+			undoButton.setEnabled(false);
+		}
+		*/
+		/*
+		if(editList.getFirst()!=null&&editList.getPrevious()!=null){
+			DocumentEdit documentedit;
+			if(editList.getCurrent()==null){
+				documentedit=editList.getFirst();
+			} else {
+				documentedit=editList.getCurrent();
+			}
+
+		}*/
 	}
 	
 	public void saveDocumentEdit(DocumentEvent ev){
@@ -206,6 +239,7 @@ public class Texed extends JFrame implements DocumentListener {
 		DocumentEdit documentedit=new DocumentEdit(location,edit,insert);
 		editList.addBeforeCurrent(documentedit);
 		previousText=textArea.getText();
+		undoButton.setEnabled(true);
 		}
 	}
 	
