@@ -117,6 +117,15 @@ public class LinkedList<T> implements Iterable<T> {
 		return new LinkedListIterator();
 	}
 	
+	public void deleteLast(){
+		size--;
+		Node current=head;
+		for(int i=0;i<size;i++){
+			current=current.next();
+		}
+		current.deleteNext();
+	}
+	
 	private class LinkedListIterator implements Iterator<T>{
 		private Node index = head;
 		@Override
@@ -132,6 +141,7 @@ public class LinkedList<T> implements Iterable<T> {
 		}
 		
 	}
+	
 	
 	private class Node{
 		private T element;
@@ -152,6 +162,10 @@ public class LinkedList<T> implements Iterable<T> {
 		
 		public Node next(){
 			return next;
+		}
+		
+		public void deleteNext(){
+			next=null;
 		}
 	}
 }

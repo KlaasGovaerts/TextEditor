@@ -24,13 +24,14 @@ import javax.swing.event.DocumentEvent.EventType;
 public class Texed extends JFrame implements DocumentListener {
 	private JTextArea textArea;
 	private JLabel info;
-	private DoublyLinkedList<DocumentEdit> editList=new DoublyLinkedList<DocumentEdit>(50);
+	//private DoublyLinkedList<DocumentEdit> editList=new DoublyLinkedList<DocumentEdit>(50);
 	private String previousText="";
 	private boolean automaticEdit=false;
 	private improvedButton undoButton;
 	private improvedButton redoButton;
 	private improvedButton closeButton;
-	
+	private StackLLMaxSize<DocumentEdit> undoStack=new StackLLMaxSize<DocumentEdit>(50);
+	private StackLL<DocumentEdit> redoStack=new StackLL<DocumentEdit>();
 
 	private static final long serialVersionUID = 5514566716849599754L;
 	
@@ -144,9 +145,12 @@ public class Texed extends JFrame implements DocumentListener {
 			String closeTag="</"+tagStack.top()+">";
 			textArea.append(closeTag);
 			DocumentEdit documentedit=new DocumentEdit(position,closeTag,true);
-			editList.addBeforeCursor(documentedit);
+			undoStack.push(documentedit);
+			redoStack.clear();
+			//editList.addBeforeCursor(documentedit);
 			previousText=textArea.getText();
-			redoButton.setEnabled(false);
+			//redoButton.setEnabled(false);
+			updateButtons();
 		}
 	}
 	
@@ -189,9 +193,10 @@ public class Texed extends JFrame implements DocumentListener {
 	 * Undo the last action
 	 */
 	public void undo(){
-		if(editList.getCursor()!=null){
+		if(!undoStack.isEmpty()){
 		automaticEdit=true;
-		DocumentEdit documentedit=editList.getCursor();
+		DocumentEdit documentedit=undoStack.pop();
+		redoStack.push(documentedit);	
 		int location=documentedit.getLocation();
 		String edit=documentedit.getEdit();
 		boolean insert=documentedit.isInsert();
@@ -201,22 +206,26 @@ public class Texed extends JFrame implements DocumentListener {
 		} else {
 			textArea.insert(edit,location);
 		}
-		editList.next();
+		//editList.next();
 		automaticEdit=false;
-		if(editList.getCursor()==null){
+		/*
+		if(undoStack.isEmpty()){
 			undoButton.setEnabled(false);
 		}
 		}
 		redoButton.setEnabled(true);
+		*/
+		updateButtons();
+		}
 	}
 	
 	/**
 	 * Redo the last undone action (if any).
 	 */
 	public void redo(){
-		if(!editList.isEmpty()&&!editList.cursorAtFirst()){
-		editList.previous();
-		DocumentEdit documentedit=editList.getCursor();
+		if(!redoStack.isEmpty()){
+		DocumentEdit documentedit=redoStack.pop();
+		undoStack.push(documentedit);
 		automaticEdit=true;
 		int location=documentedit.getLocation();
 		String edit=documentedit.getEdit();
@@ -227,11 +236,12 @@ public class Texed extends JFrame implements DocumentListener {
 			textArea.replaceRange("",location,location+edit.length());
 		}
 		automaticEdit=false;
-		if(editList.cursorAtFirst()){
+		/*if(redoStack.isEmpty()){
 			redoButton.setEnabled(false);
 		}
+		undoButton.setEnabled(true);*/
+		updateButtons();
 		}
-		undoButton.setEnabled(true);
 	}
 	
 	/**
@@ -259,11 +269,20 @@ public class Texed extends JFrame implements DocumentListener {
 			}
 		}
 		DocumentEdit documentedit=new DocumentEdit(location,edit,insert);
-		editList.addBeforeCursor(documentedit);
+		//editList.addBeforeCursor(documentedit);
+		undoStack.push(documentedit);
+		redoStack.clear();
 		previousText=textArea.getText();
-		undoButton.setEnabled(true);
-		redoButton.setEnabled(false);
+		//undoButton.setEnabled(true);
+		//redoButton.setEnabled(false);
+		updateButtons();
 		}
+	}
+	
+	private void updateButtons(){
+		undoButton.setEnabled(!undoStack.isEmpty());
+		redoButton.setEnabled(!redoStack.isEmpty());
+		closeButton.setEnabled(!generateStack().isEmpty());
 	}
 
 	/**

@@ -29,6 +29,7 @@ public class TexedTest {
 		assertEquals("<tag1>tekst / teskt <tag2> teskt </tag2></tag1>",textArea.getText());
 	}
 
+	/*
 	@Test
 	public void testShowUnclosedTags() {
 		fail("Not yet implemented");
@@ -43,7 +44,8 @@ public class TexedTest {
 	public void testInsertUpdate() {
 		fail("Not yet implemented");
 	}
-
+	*/
+	
 	@Test
 	public void testUndo() {
 		textArea.append("nog meer tekst");
@@ -58,9 +60,12 @@ public class TexedTest {
 		
 	}
 
+	
+	//Test main methode niet nuttig
+	/*
 	@Test
 	public void testMain() {
 		fail("Not yet implemented");
 	}
-
+	*/
 }
