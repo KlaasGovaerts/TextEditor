@@ -1,93 +1,109 @@
 package texteditor;
 
+/**
+ * 
+ * @author Klaas Govaerts
+ *
+ * @param <T> The element you want to store in the doubly linked list.
+ * 
+ * A doubly linked list, with a maximal size.
+ * There is also a cursor that can move trough the 
+ */
 public class DoublyLinkedList<T> {
 	private int maxSize;
-	private Node current;
+	private Node cursor;
 	private Node first;
 	private Node last;
-	private boolean isFirst;
 	private boolean empty=true;
 	
+	/**
+	 * Constructor for an empty doubly linked list
+	 * @param maxSize Maximal size of the list
+	 */
 	public DoublyLinkedList(int maxSize){
 		this.maxSize=maxSize;
 	}
 	
+	/**
+	 * 
+	 * @param maxSize Maximal size of the list
+	 * @param element First (and last) element in the list
+	 */
 	public DoublyLinkedList(int maxSize,T element){
 		this.maxSize=maxSize;
 		initialise(element);
 	}
 	
+	/**
+	 * 
+	 * @return true if the list is empty
+	 */
 	public boolean isEmpty(){
 		return empty;
 	}
-	public void initialise(T element){
-		current=new Node(element);
-		first=current;
-		last=current;
+	
+	private void initialise(T element){
+		cursor=new Node(element);
+		first=cursor;
+		last=cursor;
 		empty=false;
 	}
 	
-	public void addBeforeCurrent(T element){
-		if(current==null){
+	/**
+	 * Add an elements before the location of the cursor, and removes all other elements before it as well.
+	 * @param element
+	 */
+	public void addBeforeCursor(T element){
+		if(cursor==null){
 			initialise(element);
 		} else {
 		Node newNode=new Node(element);
-		current.setPrevious(newNode);
-		newNode.setNext(current);
+		cursor.setPrevious(newNode);
+		newNode.setNext(cursor);
 		first=newNode;
-		current=newNode;
+		cursor=newNode;
 		chop();
 		}
 	}
 	
-	public T getCurrent(){
-		if(current!=null){
-		return current.getElement();
+	/**
+	 * 
+	 * @return The element at the current location of the cursor
+	 */
+	public T getCursor(){
+		if(cursor!=null){
+		return cursor.getElement();
 		} else {
 		return null;
 		}
 	}
 	
+	/**
+	 * Moves the cursor back
+	 */
 	public void previous(){
-		if(current==null){
-			current=last;
+		if(cursor==null){
+			cursor=last;
 		} else {
-			current=current.getPrevious();
+			cursor=cursor.getPrevious();
 		}
-		/*if(!empty){
-			if(current!=null){
-				if(current.getPrevious()!=null){
-					
-				}
-			}else{
-				current=last;
-			}*/
-		
-		//}
-		/*
-		if(current!=null){
-		current=current.getPrevious();
-		} else {
-			if(current=null)
-		}
-		if(current==null){
-			isFirst=true;
-		}*/
 	}
 	
+	/**
+	 * Moves the cursor to the front
+	 */
 	public void next(){
-		/*
-		current=current.getNext();	
-		if(current==null){
-			isFirst=false;
-		}
-		*/
-		if(current==null){
-			current=first;
+		if(cursor==null){
+			cursor=first;
 		} else {
-			current=current.getNext();
+			cursor=cursor.getNext();
 		}
 	}
+	
+	/**
+	 * 
+	 * @return The size of the list
+	 */
 	public int getSize(){
 		Node iterator=first;
 		int size=0;
@@ -101,50 +117,58 @@ public class DoublyLinkedList<T> {
 		return size;
 	}
 	
-	public void chop(){
+	/**
+	 * Removes the last element, only if the list is too big
+	 */
+	private void chop(){
 		if(getSize()>maxSize){
 			removeLast();
 		}
 	}
 	
+	/**
+	 * Removes the last element
+	 */
 	public void removeLast(){
 		last.getPrevious().setNext(null);
 		last=last.getPrevious();
 	}
 	
+	/**
+	 * 
+	 * @return true if the cursor is located at the first element
+	 */
 	public boolean cursorAtFirst(){
-		if(current!=null){
-			return current.getPrevious()==null;
+		if(cursor!=null){
+			return cursor.getPrevious()==null;
 		} else {
 			return false;
 		}
 	}
 	
+	/**
+	 * 
+	 * @return The element before the cursor, without moving the cursor.
+	 */
 	public T getPrevious(){
-		if(current==null){
+		if(cursor==null){
 			return last.getElement();
 		} else {
-			return current.getPrevious().getElement();
+			return cursor.getPrevious().getElement();
 		}		
-		/*
-		if(current!=null&&current.getPrevious()!=null){
-			return current.getPrevious().getElement();
-		} else {
-			return null;
-		}
-		*/
 	}
 	
+	/**
+	 * 
+	 * @return The first element of the array
+	 */
 	public T getFirst(){
-		if(current!=null){
+		if(cursor!=null){
 			return first.getElement();
 		} else {
 			return null;
 		}
 	}
-	
-	//TODO check if all methods use T element
-	
 	
 	private class Node{
 		Node next;
@@ -159,7 +183,7 @@ public class DoublyLinkedList<T> {
 			this.previous=previous;
 			this.element=element;
 		}
-		
+
 		public void setNext(Node next){
 			this.next=next;
 		}
@@ -167,7 +191,7 @@ public class DoublyLinkedList<T> {
 		public Node getNext(){
 			return next;
 		}
-		
+
 		public void setPrevious(Node previous){
 			this.previous=previous;
 		}
@@ -175,14 +199,13 @@ public class DoublyLinkedList<T> {
 		public Node getPrevious(){
 			return previous;
 		}		
-		
+
 		public T getElement(){
 			return element;
 		}
-		
+
 		public void setElement(T element){
 			this.element=element;
-		}
-		
+		}	
 	}
 }
