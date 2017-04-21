@@ -15,7 +15,7 @@ public class TexedTest {
 	public void setUp() throws Exception {
 		texed=new Texed();
 		textArea=texed.getTextArea();
-		textArea.setText("<tag1>tekst / teskt <tag2> teskt </tag2>");
+		textArea.insert("<tag1>tekst / teskt <tag2> teskt </tag2>",0);
 	}
 
 	@Test
@@ -48,8 +48,9 @@ public class TexedTest {
 	
 	@Test
 	public void testUndo() {
-		textArea.append("nog meer tekst");
-		texed.undo();
+		textArea.replaceRange("nog meer tekst",textArea.getText().length(),textArea.getText().length());
+		//textArea.insert("nog meer tekst",textArea.getText().length());
+		texed.undo2();
 		assertEquals("<tag1>tekst / teskt <tag2> teskt </tag2>",textArea.getText());
 		/*Texed.undo();
 		assertEquals(texArea.getText(),);*/

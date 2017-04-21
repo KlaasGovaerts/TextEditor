@@ -6,6 +6,8 @@ import javax.swing.JTextArea;
 //import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 //import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -21,7 +23,7 @@ import javax.swing.event.DocumentEvent.EventType;
  * Simple GUI for a text editor.
  *
  */
-public class Texed extends JFrame implements DocumentListener {
+public class Texed extends JFrame implements DocumentListener,UndoableEditListener{
 	private JTextArea textArea;
 	private JLabel info;
 	//private DoublyLinkedList<DocumentEdit> editList=new DoublyLinkedList<DocumentEdit>(50);
@@ -32,6 +34,7 @@ public class Texed extends JFrame implements DocumentListener {
 	private improvedButton closeButton;
 	private StackLLMaxSize<DocumentEdit> undoStack=new StackLLMaxSize<DocumentEdit>(50);
 	private StackLL<DocumentEdit> redoStack=new StackLL<DocumentEdit>();
+	private StackLL<UndoableEditEvent> undoStack2=new StackLL<UndoableEditEvent>();
 
 	private static final long serialVersionUID = 5514566716849599754L;
 	
@@ -219,6 +222,12 @@ public class Texed extends JFrame implements DocumentListener {
 		}
 	}
 	
+	public void undo2(){
+		if(!undoStack2.isEmpty()){
+			undoStack2.pop().getEdit().undo();
+		}
+	}
+	
 	/**
 	 * Redo the last undone action (if any).
 	 */
@@ -339,5 +348,11 @@ public class Texed extends JFrame implements DocumentListener {
 			}
 			showUnclosedTags();
 	    }
+	}
+
+	@Override
+	public void undoableEditHappened(UndoableEditEvent e) {
+		undoStack2.push(e);
+		
 	}
 }
