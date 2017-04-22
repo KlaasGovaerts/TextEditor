@@ -23,7 +23,7 @@ import javax.swing.event.DocumentEvent.EventType;
  * Simple GUI for a text editor.
  *
  */
-public class Texed extends JFrame implements DocumentListener,UndoableEditListener{
+public class Texed extends JFrame implements DocumentListener{
 	private JTextArea textArea;
 	private JLabel info;
 	//private DoublyLinkedList<DocumentEdit> editList=new DoublyLinkedList<DocumentEdit>(50);
@@ -34,7 +34,7 @@ public class Texed extends JFrame implements DocumentListener,UndoableEditListen
 	private improvedButton closeButton;
 	private StackLLMaxSize<DocumentEdit> undoStack=new StackLLMaxSize<DocumentEdit>(50);
 	private StackLL<DocumentEdit> redoStack=new StackLL<DocumentEdit>();
-	private StackLL<UndoableEditEvent> undoStack2=new StackLL<UndoableEditEvent>();
+	//private StackLL<UndoableEditEvent> undoStack2=new StackLL<UndoableEditEvent>();
 
 	private static final long serialVersionUID = 5514566716849599754L;
 	
@@ -209,24 +209,18 @@ public class Texed extends JFrame implements DocumentListener,UndoableEditListen
 		} else {
 			textArea.insert(edit,location);
 		}
-		//editList.next();
 		automaticEdit=false;
-		/*
-		if(undoStack.isEmpty()){
-			undoButton.setEnabled(false);
-		}
-		}
-		redoButton.setEnabled(true);
-		*/
 		updateButtons();
 		}
 	}
 	
+	/*
 	public void undo2(){
 		if(!undoStack2.isEmpty()){
 			undoStack2.pop().getEdit().undo();
 		}
 	}
+	*/
 	
 	/**
 	 * Redo the last undone action (if any).
@@ -251,6 +245,14 @@ public class Texed extends JFrame implements DocumentListener,UndoableEditListen
 		undoButton.setEnabled(true);*/
 		updateButtons();
 		}
+	}
+	
+	/**
+	 * The code in common between undo & redo is replaced here
+	 * @param undo
+	 */
+	private void undoredo(boolean undo){
+		
 	}
 	
 	/**
@@ -350,9 +352,12 @@ public class Texed extends JFrame implements DocumentListener,UndoableEditListen
 	    }
 	}
 
+	
+	/*
 	@Override
 	public void undoableEditHappened(UndoableEditEvent e) {
 		undoStack2.push(e);
 		
 	}
+	*/
 }
