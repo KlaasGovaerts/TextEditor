@@ -5,6 +5,7 @@ import java.util.Iterator;
 /**
  * 
  * @author P. Cordemans
+ * @author Klaas Govaerts
  *
  * Singly linked list
  *
@@ -117,10 +118,14 @@ public class LinkedList<T> implements Iterable<T> {
 		return new LinkedListIterator();
 	}
 	
+	/**
+	 * @author Klaas Govaerts
+	 * Removes the last elements of the list
+	 */
 	public void deleteLast(){
 		size--;
 		Node current=head;
-		for(int i=0;i<size;i++){
+		for(int i=0;i<size-1;i++){
 			current=current.next();
 		}
 		current.deleteNext();
@@ -164,6 +169,10 @@ public class LinkedList<T> implements Iterable<T> {
 			return next;
 		}
 		
+		/**
+		 * @author Klaas Govaerts
+		 * Removes the reference to the next node, shortening the list.
+		 */
 		public void deleteNext(){
 			next=null;
 		}

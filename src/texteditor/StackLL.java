@@ -46,6 +46,9 @@ public class StackLL<T> implements Stack<T> {
 		return ll.first();
 	}
 	
+	/**
+	 * Removes all elements from the stack
+	 */
 	public void clear(){
 		while(!isEmpty()){
 			pop();

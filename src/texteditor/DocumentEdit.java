@@ -1,12 +1,9 @@
-/**
- * 
- */
 package texteditor;
 
 /**
  * @author Klaas Govaerts
- * Contains information about a edit in the document, used to undo and redo an action.
- *
+ * Contains information about an edit in the document, used to undo and redo an action.
+ * 
  */
 public class DocumentEdit{
 	private int location;
