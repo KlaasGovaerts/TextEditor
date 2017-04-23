@@ -312,6 +312,8 @@ public class Texed extends JFrame implements DocumentListener{
 		new Texed();
 	}
 	
+	
+	
 	/**
 	 * 
 	 * @author Klaas Govaerts
