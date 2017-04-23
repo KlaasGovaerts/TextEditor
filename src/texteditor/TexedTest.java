@@ -21,7 +21,7 @@ public class TexedTest {
 	public void setUp() throws Exception {
 		texed=new Texed();
 		textArea=texed.getTextArea();
-		textArea.insert("<tag1><tag2>tekst / teskt <tag3> teskt </tag3>",0);
+		textArea.insert("<tag1 class=\"name\"><tag2>tekst / teskt <tag3> teskt </tag3>",0);
 		texed.updateButtons();
 	}
 
@@ -46,11 +46,11 @@ public class TexedTest {
 	@Test
 	public void testCloseTag() {
 		texed.closeTag();
-		assertEquals("<tag1><tag2>tekst / teskt <tag3> teskt </tag3></tag2>",textArea.getText());
+		assertEquals("<tag1 class=\"name\"><tag2>tekst / teskt <tag3> teskt </tag3></tag2>",textArea.getText());
 		texed.closeTag();
-		assertEquals("<tag1><tag2>tekst / teskt <tag3> teskt </tag3></tag2></tag1>",textArea.getText());
+		assertEquals("<tag1 class=\"name\"><tag2>tekst / teskt <tag3> teskt </tag3></tag2></tag1>",textArea.getText());
 		texed.closeTag();
-		assertEquals("<tag1><tag2>tekst / teskt <tag3> teskt </tag3></tag2></tag1>",textArea.getText());
+		assertEquals("<tag1 class=\"name\"><tag2>tekst / teskt <tag3> teskt </tag3></tag2></tag1>",textArea.getText());
 	}
 
 	/**

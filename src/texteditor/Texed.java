@@ -120,13 +120,18 @@ public class Texed extends JFrame implements DocumentListener{
 		char[] charArray = textArea.getText().toCharArray();
 		boolean inTag=false;//set to true if a '<' is found.
 		boolean closingTag=false;
+		boolean inTagName=false;//set to true if '<' is found, false if space is found
 		String currentTag="";
 		for(char c:charArray){
 			if(inTag&&c=='/'){
 				closingTag=true;
 			}
+			if(c==' '){
+				inTagName=false;
+			}
 			if(c=='>'){
 				inTag=false;
+				inTagName=false;
 				if(!closingTag){
 					tagStack.push(currentTag+"");
 				}else{
@@ -137,11 +142,12 @@ public class Texed extends JFrame implements DocumentListener{
 				currentTag="";
 				closingTag=false;
 			}
-			if(inTag&&c!='/'){
+			if(inTag&&c!='/'&&inTagName){
 				currentTag+=c;
 			}
 			if(c=='<'){
 				inTag=true;
+				inTagName=true;
 			}
 		}
 		return tagStack;
