@@ -312,6 +312,11 @@ public class Texed extends JFrame implements DocumentListener{
 	    }
 	}
 	
+	/**
+	 * Handles paste events
+	 * source used:http://stackoverflow.com/questions/25276020/listen-to-the-paste-events-jtextarea
+	 *
+	 */
 	private class ProxyAction extends AbstractAction{
 
 	    private Action action;
