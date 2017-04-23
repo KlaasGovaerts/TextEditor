@@ -10,8 +10,8 @@ import javax.swing.JTextArea;
  *
  */
 public class ImprovedButton extends JButton{
-	protected JTextArea textArea;
-	protected Texed texed;
+	private JTextArea textArea;
+	private Texed texed;
 	
 	/**
 	 *
@@ -25,6 +25,15 @@ public class ImprovedButton extends JButton{
 		this.texed=texed;
 	}
 	
+	/**
+	 * 
+	 * @return The JTextArea where the button will have effect.
+	 */
 	public JTextArea getTextArea(){return textArea;}
+	
+	/**
+	 * 
+	 * @return The texteditor the button is located in.
+	 */
 	public Texed getTexed(){return texed;}
 }
