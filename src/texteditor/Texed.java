@@ -156,10 +156,6 @@ public class Texed extends JFrame implements DocumentListener{
 			String closeTag="</"+tagStack.top()+">";
 			textArea.append(closeTag);
 			saveDocumentEdit();
-			/*
-			undoStack.push(textArea.getText());
-			redoStack.clear();
-			updateButtons();*/
 		}
 	}
 	
