@@ -206,20 +206,9 @@ public class Texed extends JFrame implements DocumentListener{
 	 */
 	public void undo(){
 		if(!undoStack.isEmpty()){
-		automaticEdit=true;
 		DocumentEdit documentedit=undoStack.pop();
-		redoStack.push(documentedit);	
-		int location=documentedit.getLocation();
-		String edit=documentedit.getEdit();
-		boolean insert=documentedit.isInsert();
-		
-		if(insert){
-			textArea.replaceRange("",location,location+edit.length());
-		} else {
-			textArea.insert(edit,location);
-		}
-		automaticEdit=false;
-		updateButtons();
+		redoStack.push(documentedit);
+		undoredo(true,documentedit);
 		}
 	}
 	
@@ -230,18 +219,25 @@ public class Texed extends JFrame implements DocumentListener{
 		if(!redoStack.isEmpty()){
 		DocumentEdit documentedit=redoStack.pop();
 		undoStack.push(documentedit);
+		undoredo(false,documentedit);
+		}
+	}
+	
+	/**
+	 * Written to avoid copying of code.
+	 */
+	public void undoredo(boolean undo,DocumentEdit documentedit){
 		automaticEdit=true;
 		int location=documentedit.getLocation();
 		String edit=documentedit.getEdit();
 		boolean insert=documentedit.isInsert();
-		if(insert){
+		if(insert^undo){
 			textArea.insert(edit,location);
 		} else {
 			textArea.replaceRange("",location,location+edit.length());
 		}
 		automaticEdit=false;
 		updateButtons();
-		}
 	}
 
 	/**

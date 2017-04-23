@@ -15,9 +15,9 @@ import org.junit.Test;
  * Test class for {@link texteditor.ImprovedButton}.
  */
 public class ImprovedButtonTest{
-	JTextArea textArea;
-	Texed texed;
-	ImprovedButton button;
+	private JTextArea textArea;
+	private Texed texed;
+	private ImprovedButton button;
 	
 	/**
 	 * @throws java.lang.Exception

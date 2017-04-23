@@ -11,7 +11,7 @@ import org.junit.Test;
 /**
  * @author Klaas Govaerts
  * Contains the tests for deleteLast of the linkedlist
- * Tests for the other methods were already written in the lecture.
+ * Tests for the other methods were already written.
  */
 public class LinkedListTest {
 private LinkedList ll;

@@ -10,7 +10,7 @@ import org.junit.Test;
  * Test class for {@link texteditor.DocumentEdit}
  */
 public class DocumentEditTest {
-	DocumentEdit edit;
+	private DocumentEdit edit;
 	/**
 	 * @throws java.lang.Exception
 	 */

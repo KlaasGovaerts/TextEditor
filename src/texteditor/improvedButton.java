@@ -9,7 +9,7 @@ import javax.swing.JTextArea;
  *	A JButton with a reference to the text editor, and the textArea as well
  *
  */
-public class ImprovedButton extends JButton {
+public class ImprovedButton extends JButton{
 	protected JTextArea textArea;
 	protected Texed texed;
 	
